@@ -1,47 +1,49 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { computed, ref } from 'vue'
+
+import Flicking from '@egjs/vue3-flicking'
+import { Pagination, Arrow } from '@egjs/flicking-plugins'
+import('@egjs/vue3-flicking/dist/flicking.css')
+import('@egjs/flicking-plugins/dist/flicking-plugins.css')
+
+const options = computed(() => {
+  return {
+    align: 'prev',
+    bound: true,
+    preventDefaultOnDrag: true,
+    resizeOnContentsReady: true
+  }
+})
+
+const moveCount = ref(Math.random() < 0.5 ? 1 : 2)
+
+const plugins = computed(() => {
+  return [
+    new Pagination(),
+    new Arrow({
+      moveCount: moveCount.value
+    })
+  ]
+})
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
+  <button @click="moveCount = Math.max(1, (moveCount + 1) % 3)">Switch move count: {{ moveCount }}</button>
+  <Flicking :options="options" :plugins="plugins">
+    <div
+      v-for="i in 10"
+      :key="i"
+      class="plugins-panel"
+    >
+      <img class="panel-image" src="https://picsum.photos/200/300" />
     </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+    <template #viewport>
+      <div class="flicking-pagination"></div>
+      <span class="flicking-arrow-prev"></span>
+      <span class="flicking-arrow-next"></span>
+    </template>
+  </Flicking>
 </template>
 
-<style scoped>
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-}
+<style>
 </style>
